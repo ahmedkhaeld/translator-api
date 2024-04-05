@@ -2,11 +2,13 @@ name: Translator API CI Checks
 
 on:
   push:
-    branches:
+    branches: 
       - main
-
+defaults: 
+  run:
+    working-directory: .
 jobs:
-  build:
+  test:
     name: Test Application
     runs-on: ubuntu-latest 
     steps:
@@ -16,35 +18,45 @@ jobs:
         go-version: ^1.21.6
     - name: Check out code into the Go module directory 
       uses: actions/checkout@v2
-
-    - name:  Run Test
-      run : make test
-    
+    - name: Run Test
+      run: make test 
     - name: Coverage Check
-      run: make coverage
-
-    - name: Generate report
-      run: make report
-
-    - name: Copy Files
+      run: make coverage 
+    - name: Generate Report
+      run: make report 
+    - name: Copy Files 
       run: |
-         mkdir reports
-         cp coverage.html reports/.
+           mkdir  reports
+           cp cover.html reports/.
 
-    - name: Archive
+    - name: Archive 
       uses: actions/upload-artifact@v2
       with:
-        name: reports
-        path: reports
+          name: reports
+          path: ch3/reports  
+  build:
+    name: Build App
+    runs-on: ubuntu-latest
+    needs: test 
+    steps:
+    - name: Set up Go 1.x 
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.21.6
+
+    - name: Check out code into the Go module directory #
+      uses: actions/checkout@v2
 
     - name: Build
       run: make build 
+
     - name: Copy Files 
       run: |
            mkdir  artifacts
            cp api artifacts/.
+
     - name: Archive 
       uses: actions/upload-artifact@v2
       with:
           name: api 
-          path: artifacts
+          path: artifacts  
