@@ -1,0 +1,36 @@
+name: Translator API Checks
+
+on:
+  push:
+    branches: # <1>
+      - main
+defaults: # DO NOT INCLUDE
+  run:
+    working-directory: .
+jobs:
+  build:
+    name: Build App
+    runs-on: ubuntu-latest #
+    steps:
+    # setup Go v1.21.6 or higher
+    - name: Set up Go 1.x #
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.21.6
+    # Check out the code, pull code from local repository
+    - name: Check out code into the Go module directory #
+      uses: actions/checkout@v2
+    # Build the binary
+    - name: Build
+      run: make build #
+    # Copy the file to the upload directory
+    - name: Copy Files #
+      run: |
+           mkdir  artifacts
+           cp api artifacts/.
+    # Upload the artifact to GitHub
+    - name: Archive #
+      uses: actions/upload-artifact@v2
+      with:
+          name: api #
+          path: artifacts
